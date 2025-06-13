@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 from .models import PerfilUsuario, Medicamento, RecetaEmitida, MedicamentoVendido
 
@@ -54,3 +55,18 @@ class MedicamentoVendidoSerializer(serializers.ModelSerializer):
             'fecha_venta'
         ]
         read_only_fields = ['fecha_venta']
+        
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['tipo_usuario'] = user.perfil.tipo_usuario
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['username']     = self.user.username
+        data['tipo_usuario'] = self.user.perfil.tipo_usuario
+        return data
+

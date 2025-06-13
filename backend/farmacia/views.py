@@ -1,12 +1,14 @@
 # farmacia/views.py
 
 from rest_framework import viewsets
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import PerfilUsuario, Medicamento, RecetaEmitida, MedicamentoVendido
 from .serializers import (
     PerfilUsuarioSerializer,
     MedicamentoSerializer,
     RecetaEmitidaSerializer,
-    MedicamentoVendidoSerializer
+    MedicamentoVendidoSerializer,
+    MyTokenObtainPairSerializer
 )
 
 class PerfilUsuarioViewSet(viewsets.ModelViewSet):
@@ -39,3 +41,8 @@ class MedicamentoVendidoViewSet(viewsets.ModelViewSet):
     """
     queryset = MedicamentoVendido.objects.all()
     serializer_class = MedicamentoVendidoSerializer
+
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
