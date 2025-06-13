@@ -1,0 +1,23 @@
+# backend/.dockerignore
+
+# Ignorar cualquier carpeta __pycache__ en cualquier nivel
+**/__pycache__/
+# Ignorar archivos compilados de Python
+**/*.py[cod]
+**/*$py.class
+
+# Virtualenv o entornos locales (si tienes alguno dentro de backend/)
+venv/
+.venv/
+
+# Bases de datos SQLite si las tuvieras
+*.sqlite3
+
+# Archivos de entorno
+*.env
+
+# Metadatos de Git / IDEs
+.git
+.gitignore
+.vscode/
+.idea/

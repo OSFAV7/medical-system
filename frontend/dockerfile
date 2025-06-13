@@ -1,0 +1,16 @@
+# frontend/Dockerfile
+
+# 1) Build stage
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Instalamos deps
+COPY package*.json ./
+RUN npm ci
+
+# Copiamos el resto y construimos el dist
+COPY . .
+RUN npm run build
+
+# NOTA: el resultado queda en /app/dist

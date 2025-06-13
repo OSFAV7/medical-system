@@ -1,0 +1,16 @@
+services:
+  backend:
+    build: ./backend
+    # NO haya volumes aquí
+    expose:
+      - "8000:8000"
+
+  nginx:
+    build:
+      context: .                # ahora el contexto es la raíz, donde sí está frontend/dist
+      dockerfile: nginx/Dockerfile
+    container_name: medical-nginx
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
