@@ -10,8 +10,11 @@ Ejecutar el siguinte comado para crear el superusuario y poder acceder al admin 
 
       docker-compose exec backend python manage.py createsuperuser
 
+ usuario:
+ 
+       medicalSystem
 
-      usuario: medicalSystem
 
+contraseña:
 
-      contraseña:System123456
+      System123456
