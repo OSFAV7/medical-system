@@ -138,3 +138,21 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     # Opciones adicionales: servidores, autenticación, etc.
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    # Si usas blacklist, habilítalo aquí:
+    # 'BLACKLIST_AFTER_ROTATION': True,
+}
