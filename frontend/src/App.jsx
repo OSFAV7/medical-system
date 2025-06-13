@@ -17,7 +17,7 @@ export default function App() {
             path="/"
             element={
               <h1 className="text-4xl font-bold text-blue-600">
-                ¡Bienvenido al Medical Frontend!
+                ¡Bienvenido al Medical!
               </h1>
             }
           />
