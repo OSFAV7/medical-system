@@ -7,8 +7,6 @@ venv/
 
 # Node/Vite
 node_modules/
-dist/
-
 # Editor / OS
 .vscode/
 .idea/
