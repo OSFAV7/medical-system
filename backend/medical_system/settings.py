@@ -126,20 +126,18 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {
-    # Usar el AutoSchema de drf-spectacular
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    # … otros ajustes DRF …
-}
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Medical Backend API',
-    'DESCRIPTION': 'Documentación de la API para pacientes, doctores y farmacia',
     'VERSION': '1.0.0',
-    # Opciones adicionales: servidores, autenticación, etc.
+    'DESCRIPTION': 'Documentación de la API para pacientes, doctores y farmacia',
+    # …otras opciones que quieras
 }
 
 REST_FRAMEWORK = {
+    # Le decimos a DRF que use el AutoSchema compatible con drf-spectacular
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -156,3 +154,10 @@ SIMPLE_JWT = {
     # Si usas blacklist, habilítalo aquí:
     # 'BLACKLIST_AFTER_ROTATION': True,
 }
+
+# settings.py
+
+STATIC_URL = '/static/'
+
+# Directorio dentro del contenedor donde collectstatic colocará los archivos
+STATIC_ROOT = BASE_DIR / 'staticfiles'
