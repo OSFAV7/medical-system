@@ -10,26 +10,54 @@ export default function DoctorDashboard() {
   const [time, setTime] = useState(() => new Date().toLocaleTimeString());
   const timerRef = useRef(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    if (query.trim() !== '') {
-      fetch(`/api/pacientes?search=${encodeURIComponent(query)}`, {
-        signal: controller.signal
-      })
-        .then(r => r.json())
-        .then(setPatients)
-        .catch(() => {});
-    } else {
-      setPatients([]);
-    }
-    return () => controller.abort();
-  }, [query]);
+ useEffect(() => {
+  const controller = new AbortController();
+  const token = localStorage.getItem('accessToken'); // O el nombre de tu token
 
-  useEffect(() => {
-    fetch('/api/citas?status=pendiente')
-      .then(r => r.json())
-      .then(setAppointments);
-  }, []);
+  if (query.trim() !== '') {
+    fetch(
+      `http://localhost/api/paciente/pacientes/?search=${encodeURIComponent(query)}`,
+      {
+        signal: controller.signal,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+      .then(r => {
+        if (!r.ok) throw new Error('No autorizado');
+        return r.json();
+      })
+      .then(setPatients)
+      .catch(() => setPatients([])); // Si hay error, vacía la lista
+  } else {
+    setPatients([]);
+  }
+  return () => controller.abort();
+}, [query]);
+
+
+useEffect(() => {
+  const token = localStorage.getItem('accessToken'); // O la variable donde guardas el token
+
+  fetch('http://localhost/api/doctor/citas/?estado=pendiente', {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(r => {
+      if (!r.ok) throw new Error('No autorizado');
+      return r.json();
+    })
+    .then(data => {
+      // Verifica que sea un array antes de usar .map()
+      setAppointments(Array.isArray(data) ? data : []);
+    })
+    .catch(() => setAppointments([]));
+}, []);
+
 
   useEffect(() => {
     timerRef.current = setInterval(
@@ -39,13 +67,30 @@ export default function DoctorDashboard() {
     return () => clearInterval(timerRef.current);
   }, []);
 
-  useEffect(() => {
-    if (selectedPatient) {
-      fetch(`/api/pacientes/${selectedPatient.id}/historial`)
-        .then(r => r.json())
-        .then(setHistory);
-    }
-  }, [selectedPatient]);
+useEffect(() => {
+  if (selectedPatient) {
+    const token = localStorage.getItem('accessToken'); // Cambia el nombre si lo guardas diferente
+
+    fetch(
+      `http://localhost/api/paciente/historiales/${selectedPatient.id}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+      .then(r => {
+        if (!r.ok) throw new Error('No autorizado');
+        return r.json();
+      })
+      .then(data => {
+        // Si la respuesta no es array, deja la lista vacía
+        setHistory(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setHistory([]));
+  }
+}, [selectedPatient]);
 
   useEffect(() => {
     function handler(e) {
@@ -105,21 +150,44 @@ export default function DoctorDashboard() {
         <div className="text-gray-500 text-center mb-6">Hora actual</div>
         {/* Citas pendientes */}
         <h2 className="text-lg font-semibold mb-2 text-emerald-700">Citas pendientes</h2>
-        {appointments.length === 0 ? (
-          <p className="text-gray-500">No hay citas pendientes</p>
-        ) : (
-          appointments.map(appt => (
-            <div
-              key={appt.id}
-              className="bg-emerald-50 border rounded p-3 mb-3 shadow-sm"
-            >
-              <div className="font-medium">{appt.paciente}</div>
-              <div className="text-sm text-gray-500">
-                {new Date(appt.fecha).toLocaleString()}
-              </div>
-            </div>
-          ))
-        )}
+{appointments.length === 0 ? (
+  <p className="text-gray-500">No hay citas pendientes</p>
+) : (
+  appointments.map(appt => (
+    <div
+      key={appt.id}
+      className="bg-emerald-50 border rounded p-3 mb-3 shadow-sm"
+    >
+      {/* Muestra el nombre, o id, o email según disponibilidad */}
+      <div className="font-medium">
+        {appt.paciente?.nombre ||
+         appt.paciente_nombre ||
+         appt.paciente ||
+         appt.email ||
+         appt.id ||
+         "Sin nombre"}
+      </div>
+      <div className="text-sm text-gray-500">
+        {/* 
+        Si la fecha es válida (formato ISO 8601 o compatible con JS), la muestra.
+        Si no, muestra la fecha cruda o "Sin fecha".
+        */}
+        {appt.fecha && !isNaN(Date.parse(
+          typeof appt.fecha === "string"
+            ? appt.fecha.replace(" ", "T")
+            : appt.fecha
+        ))
+          ? new Date(
+              typeof appt.fecha === "string"
+                ? appt.fecha.replace(" ", "T")
+                : appt.fecha
+            ).toLocaleString()
+          : appt.fecha || "Sin fecha"}
+      </div>
+    </div>
+  ))
+)}
+
       </div>
 
       {/* Overlay para cerrar el drawer */}
