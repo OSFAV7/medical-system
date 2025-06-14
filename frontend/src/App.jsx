@@ -3,7 +3,6 @@ import PacienteDashboard  from './paginas/PacienteDashboard'
 import DoctorDashboard    from './paginas/DoctorDashboard'
 import FarmaciaDashboard  from './paginas/FarmaciaDashboard'
 import Home from './components/home'
-import { DoctorDashboard } from "./paginas/DoctorDashboard";
 import { Routes, Route } from 'react-router-dom'
 
 export default function App() {

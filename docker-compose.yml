@@ -4,6 +4,7 @@ services:
     # monta el staticfiles en el host para poder leerlo desde nginx
     volumes:
       - ./backend/staticfiles:/app/staticfiles
+      - ./db_data/db.sqlite3:/app/db.sqlite3
 
 
   nginx:
