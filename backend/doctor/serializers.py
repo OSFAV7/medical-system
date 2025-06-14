@@ -28,12 +28,18 @@ class CitaConsultaSerializer(serializers.ModelSerializer):
         queryset=DatosPaciente.objects.all()
     )
 
+    paciente_nombre = serializers.CharField(
+        source='paciente.usuario.get_full_name',
+        read_only=True
+    )
+
     class Meta:
         model = CitaConsulta
         fields = [
             'id',
             'doctor',
             'paciente',
+            'paciente_nombre',  # campo adicional para mostrar nombre completo
             'fecha_hora',
             'motivo',
             'estado',

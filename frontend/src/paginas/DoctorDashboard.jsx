@@ -15,27 +15,29 @@ export default function DoctorDashboard() {
   const token = localStorage.getItem('accessToken'); // O el nombre de tu token
 
   if (query.trim() !== '') {
-    fetch(
-      `http://localhost/api/paciente/pacientes/?search=${encodeURIComponent(query)}`,
-      {
-        signal: controller.signal,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+    fetch(`http://localhost/api/paciente/pacientes/?search=${encodeURIComponent(query)}`,
+        {
+          signal: controller.signal,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    )
-      .then(r => {
-        if (!r.ok) throw new Error('No autorizado');
-        return r.json();
-      })
-      .then(setPatients)
-      .catch(() => setPatients([])); // Si hay error, vacía la lista
-  } else {
-    setPatients([]);
-  }
-  return () => controller.abort();
-}, [query]);
+      )
+        .then(r => {
+          if (!r.ok) throw new Error('No autorizado');
+          return r.json();
+        })
+        .then(data => {
+          console.log('Pacientes recibidos:', data); // LOG PACIENTES
+          setPatients(data);
+        })
+        .catch(() => setPatients([]));
+    } else {
+      setPatients([]);
+    }
+    return () => controller.abort();
+  }, [query]);
 
 
 useEffect(() => {
@@ -53,6 +55,7 @@ useEffect(() => {
     })
     .then(data => {
       // Verifica que sea un array antes de usar .map()
+      console.log('Citas recibidas:', data);
       setAppointments(Array.isArray(data) ? data : []);
     })
     .catch(() => setAppointments([]));
@@ -67,30 +70,6 @@ useEffect(() => {
     return () => clearInterval(timerRef.current);
   }, []);
 
-useEffect(() => {
-  if (selectedPatient) {
-    const token = localStorage.getItem('accessToken'); // Cambia el nombre si lo guardas diferente
-
-    fetch(
-      `http://localhost/api/paciente/historiales/${selectedPatient.id}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    )
-      .then(r => {
-        if (!r.ok) throw new Error('No autorizado');
-        return r.json();
-      })
-      .then(data => {
-        // Si la respuesta no es array, deja la lista vacía
-        setHistory(Array.isArray(data) ? data : []);
-      })
-      .catch(() => setHistory([]));
-  }
-}, [selectedPatient]);
 
   useEffect(() => {
     function handler(e) {
@@ -153,40 +132,26 @@ useEffect(() => {
 {appointments.length === 0 ? (
   <p className="text-gray-500">No hay citas pendientes</p>
 ) : (
-  appointments.map(appt => (
+  appointments.map((appt) => (
     <div
       key={appt.id}
       className="bg-emerald-50 border rounded p-3 mb-3 shadow-sm"
     >
-      {/* Muestra el nombre, o id, o email según disponibilidad */}
       <div className="font-medium">
-        {appt.paciente?.nombre ||
-         appt.paciente_nombre ||
-         appt.paciente ||
-         appt.email ||
-         appt.id ||
-         "Sin nombre"}
+        Paciente: {appt.paciente_nombre}
       </div>
       <div className="text-sm text-gray-500">
-        {/* 
-        Si la fecha es válida (formato ISO 8601 o compatible con JS), la muestra.
-        Si no, muestra la fecha cruda o "Sin fecha".
-        */}
-        {appt.fecha && !isNaN(Date.parse(
-          typeof appt.fecha === "string"
-            ? appt.fecha.replace(" ", "T")
-            : appt.fecha
-        ))
-          ? new Date(
-              typeof appt.fecha === "string"
-                ? appt.fecha.replace(" ", "T")
-                : appt.fecha
-            ).toLocaleString()
-          : appt.fecha || "Sin fecha"}
+        Fecha:{" "}
+        {appt.fecha_hora && !isNaN(Date.parse(appt.fecha_hora))
+          ? new Date(appt.fecha_hora).toLocaleString()
+          : "Sin fecha"}
       </div>
+      <div className="text-sm text-gray-600">Motivo: {appt.motivo || "N/A"}</div>
+      <div className="text-sm text-gray-600">Notas: {appt.notas || "N/A"}</div>
     </div>
   ))
 )}
+
 
       </div>
 
@@ -199,7 +164,7 @@ useEffect(() => {
       )}
       <div className="min-h-screen w-screen bg-gray-100 grid md:grid-cols-[1fr_1fr] relative">
           {/* Contenido principal */}
-          <div className="pl-20 p-6 flex flex-col h-full md:col-span-1">
+          <div className="pl-40 p-6 flex flex-col h-full md:col-span-1">
             {/* Barra de búsqueda */}
             <div>
               <input
@@ -222,8 +187,8 @@ useEffect(() => {
                     onClick={() => setSelectedPatient(p)}
                   >
                     <div>
-                      <p className="font-medium">{p.nombre}</p>
-                      <p className="text-sm text-gray-500">{p.email}</p>
+                      <p className="font-medium">{p.usuario_nombre || p.full_name || p.username || p.email || p.id || "Sin nombre"}</p>
+                      <p className="text-sm text-gray-500">{p.usuario_email}</p>
                     </div>
                     <span className="text-emerald-600 hover:underline">Ver historial</span>
                   </div>
@@ -232,26 +197,39 @@ useEffect(() => {
             </div>
           </div>
           {/* Historial clínico */}
-              <aside className="pl-6 bg-white shadow-inner h-full overflow-y-auto md:col-span-1 py-8">
-            <h2 className="text-2xl font-semibold mb-4 text-emerald-600">Historial clínico</h2>
-            {selectedPatient ? (
-              history.length === 0 ? (
-                <p className="text-gray-500">Sin registros para este paciente</p>
+            <aside className="pl-6 bg-white shadow-inner h-full overflow-y-auto md:col-span-1 py-8">
+              <h2 className="text-2xl font-semibold mb-4 text-emerald-600">Historial clínico</h2>
+              {selectedPatient ? (
+                selectedPatient.historiales.length === 0 ? (
+                  <p className="text-gray-500">Sin registros para este paciente</p>
+                ) : (
+                  <div className="space-y-4">
+                    {selectedPatient.historiales.map((h) => (
+                      <div key={h.id} className="border-b pb-2 mb-2">
+                        <div className="font-medium">{ h.fecha_consulta? new Date(h.fecha_consulta).toLocaleString() : '' }</div>
+                        <div className="text-gray-700 text-sm whitespace-pre-line">
+                          <p>Altura: {h.altura}</p>
+                          <p>Peso: {h.peso}</p>
+                          <p>Motivo de la consulta: {h.motivo_consulta}</p>
+                          <p>Estado del paciente del consulta: {h.estadoactual}</p>
+                          <p>Diagnostico en consulta: {h.diagnostico}</p>
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          <p>Tratamiento: {h.tratamiento}</p>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          <p>Notas Medicas: {h.notas_medicas}</p>
+                          </div>
+                      </div>
+                    ))}
+                  </div>
+                )
               ) : (
-                <div className="space-y-4">
-                  {history.map((h, idx) => (
-                    <div key={idx} className="border-b pb-2 mb-2">
-                      <div className="font-medium">{h.titulo || 'Consulta'}</div>
-                      <div className="text-gray-700 text-sm whitespace-pre-line">{h.detalles}</div>
-                      <div className="text-xs text-gray-400 mt-1">{h.fecha ? new Date(h.fecha).toLocaleString() : ''}</div>
-                    </div>
-                  ))}
-                </div>
-              )
-            ) : (
-              <p className="text-gray-400 italic mt-10">Selecciona un paciente para ver su historial clínico.</p>
-            )}
-              </aside>
+                <p className="text-gray-400 italic mt-10">
+                  Selecciona un paciente para ver su historial clínico.
+                </p>
+              )}
+            </aside>
       </div>   
     </div>
   );
