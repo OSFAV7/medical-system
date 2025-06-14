@@ -3,36 +3,17 @@
 // Usa <Home /> dentro de tu router o un archivo .astro
 
 import React from "react";
+import Navbar from './Navbar'
 
 export default function Home() {
   return (
-    <div className="min-h-screen font-sans antialiased bg-gray-50 text-gray-800">
-      {/* NAVBAR */}
-      <header className="bg-white/80 backdrop-blur sticky top-0 z-50 shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <a href="#" className="text-2xl font-bold text-emerald-600">
-            Medical<span className="text-emerald-500">System</span>
-          </a>
-          <nav className="hidden md:flex space-x-6 text-sm font-medium">
-            <a href="#features" className="hover:text-emerald-600 transition">
-              Servicios
-            </a>
-            <a href="#about" className="hover:text-emerald-600 transition">
-              Nosotros
-            </a>
-            <a href="#contact" className="hover:text-emerald-600 transition">
-              Contacto
-            </a>
-          </nav>
-          <a
-            href="/login"
-            className="inline-block rounded-lg bg-emerald-600 px-5 py-2 text-white hover:bg-emerald-700 transition"
-          >
-            Ingresar
-          </a>
-        </div>
-      </header>
 
+    
+
+
+    <div className="min-h-screen font-sans antialiased bg-gray-50 text-gray-800">
+      
+      <Navbar />      {/* pónla aquí arriba */}
       {/* HERO */}
       <section className="relative isolate overflow-hidden bg-gradient-to-br from-emerald-600 to-emerald-400 py-24 text-white">
         <div

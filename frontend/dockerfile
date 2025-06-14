@@ -1,16 +1,35 @@
 # frontend/Dockerfile
 
-# 1) Build stage
-FROM node:18-alpine AS builder
+# Etapa de build con Node
+FROM node:18-alpine AS build
 
+# Directorio de trabajo
 WORKDIR /app
 
-# Instalamos deps
+# Copia defs de dependencias
 COPY package*.json ./
-RUN npm ci
 
-# Copiamos el resto y construimos el dist
+# Instala dependencias del proyecto
+RUN npm install
+
+# Instala Tailwind CSS y el plugin de Vite
+RUN npm install tailwindcss @tailwindcss/vite
+
+# Copia el resto del código
 COPY . .
+
+# Genera los assets (incluye Tailwind mediante Vite)
 RUN npm run build
 
-# NOTA: el resultado queda en /app/dist
+# Etapa para servir el build con Nginx
+FROM nginx:stable-alpine
+
+# Remueve config default y copia la tuya
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copia los archivos generados al directorio de Nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

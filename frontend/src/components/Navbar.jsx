@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReactDOM from 'react-dom';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +30,6 @@ export default function Navbar() {
       localStorage.setItem('accessToken', data.access);
       localStorage.setItem('refreshToken', data.refresh);
       closeModal();
-      // Redirecciona según tipo de usuario
       switch (data.tipo_usuario) {
         case 'paciente':
           navigate('/paciente');
@@ -48,61 +48,85 @@ export default function Navbar() {
     }
   };
 
-  return (
-    <nav className="bg-white shadow p-4 flex justify-between items-center">
-      <div className="text-2xl font-bold">Medical System</div>
-      <button
-        onClick={openModal}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Login
-      </button>
-
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
-            <h2 className="text-xl font-semibold mb-4">Login</h2>
-            {error && <div className="mb-2 text-red-500">{error}</div>}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium">Username</label>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full border rounded px-2 py-1"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border rounded px-2 py-1"
-                  required
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
+  const modal = isOpen && ReactDOM.createPortal(
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+        <h2 className="text-xl font-semibold mb-4">Login</h2>
+        {error && <div className="mb-2 text-red-500">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium">Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full border rounded px-2 py-1"
+              required
+            />
           </div>
+          <div>
+            <label className="block text-sm font-medium">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border rounded px-2 py-1"
+              required
+            />
+          </div>
+          <div className="flex justify-end space-x-2">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="px-4 py-2"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>,
+    document.body
+  );
+
+  return (
+    <>
+      <header className="bg-white/80 backdrop-blur sticky top-0 z-50 shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+          <a href="#" className="text-2xl font-bold text-emerald-600">
+            MedicalSystem<span className="text-emerald-500">System</span>
+          </a>
+          <nav className="hidden md:flex space-x-6 text-sm font-medium">
+            <a href="#features" className="hover:text-emerald-600 transition">
+              Servicios
+            </a>
+            <a href="#about" className="hover:text-emerald-600 transition">
+              Nosotros
+            </a>
+            <a href="#contact" className="hover:text-emerald-600 transition">
+              Contacto
+            </a>
+          </nav>
+          <button
+            onClick={openModal}
+            className="inline-block rounded-lg bg-emerald-600 px-5 py-2 text-white hover:bg-emerald-700 transition"
+          >
+            Ingresar
+          </button>
         </div>
-      )}
-    </nav>
+      </header>
+
+      {modal}
+    </>
   );
 }
+
+
+
+      
