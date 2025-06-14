@@ -5,6 +5,7 @@ services:
     volumes:
       - ./backend/staticfiles:/app/staticfiles
 
+
   nginx:
     build:
       context: .
