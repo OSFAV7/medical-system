@@ -10,34 +10,38 @@ export default function DoctorDashboard() {
   const [time, setTime] = useState(() => new Date().toLocaleTimeString());
   const timerRef = useRef(null);
 
- useEffect(() => {
+useEffect(() => {
   const controller = new AbortController();
-  const token = localStorage.getItem('accessToken'); // O el nombre de tu token
+  const token = localStorage.getItem('accessToken');
 
-  if (query.trim() !== '') {
-    fetch(`http://localhost/api/paciente/pacientes/?search=${encodeURIComponent(query)}`,
-        {
-          signal: controller.signal,
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-        .then(r => {
-          if (!r.ok) throw new Error('No autorizado');
-          return r.json();
-        })
-        .then(data => {
-          console.log('Pacientes recibidos:', data); // LOG PACIENTES
-          setPatients(data);
-        })
-        .catch(() => setPatients([]));
-    } else {
-      setPatients([]);
+  // 👉 NO BUSCAR si query está vacío
+  if (query.trim() === '') {
+    setPatients([]);
+    return; // 
+  }
+
+  fetch(`http://localhost/api/paciente/pacientes/`, {
+    signal: controller.signal,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     }
-    return () => controller.abort();
-  }, [query]);
+  })
+    .then(r => {
+      if (!r.ok) throw new Error('No autorizado');
+      return r.json();
+    })
+    .then(data => {
+      const filtered = data.filter(p =>
+        `${p.usuario_nombre} ${p.usuario_apellido || ''}`.toLowerCase().includes(query.toLowerCase())
+      );
+      setPatients(filtered);
+    })
+    .catch(() => setPatients([]));
+
+  return () => controller.abort();
+}, [query]);
+
 
 
 useEffect(() => {
@@ -78,13 +82,6 @@ useEffect(() => {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
-
-
- function handleLogout() {
-  localStorage.removeItem('accessToken');
-  window.location.href = '/main'; // O la ruta de tu login real
-}
-
 
   return (
     <div className="min-h-screen bg-gray-100 grid md:grid-cols-[1fr_1fr] relative">
@@ -134,7 +131,6 @@ useEffect(() => {
           {time}
         </div>
         <div className="text-gray-500 text-center mb-6">Hora actual</div>
-        
         {/* Citas pendientes */}
         <h2 className="text-lg font-semibold mb-2 text-emerald-700">Citas pendientes</h2>
 {appointments.length === 0 ? (
@@ -160,25 +156,6 @@ useEffect(() => {
   ))
 )}
 
-  {/* Botón de cerrar sesión pegado abajo */}
-  <div className="flex flex-col items-center mb-2 mt-6">
-    <button
-      onClick={handleLogout}
-      className="
-        flex items-center gap-2 px-5 py-2
-        rounded-full bg-rose-100 hover:bg-rose-200
-        text-rose-700 font-semibold shadow transition
-        border border-rose-200
-        focus:outline-none focus:ring-2 focus:ring-rose-300
-        animate-fade-in
-      "
-    >
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1" />
-      </svg>
-      Cerrar sesión
-    </button>
-  </div>
 
       </div>
 
