@@ -4,7 +4,8 @@ from .views import (
     PerfilUsuarioViewSet,
     MedicamentoViewSet,
     RecetaEmitidaViewSet,
-    MedicamentoVendidoViewSet
+    MedicamentoVendidoViewSet,
+    RegistroUsuarioView
 )
 
 router = DefaultRouter()
@@ -15,4 +16,5 @@ router.register(r'ventas', MedicamentoVendidoViewSet, basename='medicamentovendi
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('registro/', RegistroUsuarioView.as_view(), name='registro-usuario'),
 ]

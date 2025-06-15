@@ -70,3 +70,19 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['tipo_usuario'] = self.user.perfil.tipo_usuario
         return data
 
+class RegistroUsuarioSerializer(serializers.ModelSerializer):
+    tipo_usuario = serializers.ChoiceField(choices=PerfilUsuario.TIPO_USUARIO_CHOICES, write_only=True)
+    password = serializers.CharField(write_only=True, min_length=8)
+
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'tipo_usuario']
+
+    def create(self, validated_data):
+        tipo_usuario = validated_data.pop('tipo_usuario')
+        password = validated_data.pop('password')
+        user = User.objects.create(username=validated_data['username'])
+        user.set_password(password)
+        user.save()
+        PerfilUsuario.objects.create(usuario=user, tipo_usuario=tipo_usuario)
+        return user

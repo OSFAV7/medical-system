@@ -1,6 +1,9 @@
 # farmacia/views.py
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import PerfilUsuario, Medicamento, RecetaEmitida, MedicamentoVendido
 from .serializers import (
@@ -8,7 +11,8 @@ from .serializers import (
     MedicamentoSerializer,
     RecetaEmitidaSerializer,
     MedicamentoVendidoSerializer,
-    MyTokenObtainPairSerializer
+    MyTokenObtainPairSerializer,
+    RegistroUsuarioSerializer
 )
 
 class PerfilUsuarioViewSet(viewsets.ModelViewSet):
@@ -46,3 +50,15 @@ class MedicamentoVendidoViewSet(viewsets.ModelViewSet):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+    
+class RegistroUsuarioView(APIView):
+    permission_classes = [AllowAny]
+    """
+    Registra un nuevo usuario y crea su perfil asociado (doctor o paciente).
+    """
+    def post(self, request):
+        serializer = RegistroUsuarioSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'mensaje': 'Usuario registrado correctamente'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

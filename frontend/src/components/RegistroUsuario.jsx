@@ -18,25 +18,19 @@ export default function RegistroUsuario() {
 
     try {
       // 1. Crear usuario (ajusta el endpoint si lo tienes, aquí un ejemplo típico)
-      const resUser = await fetch("/api/register/", {
+      const resUser = await fetch("http://localhost/api/farmacia/registro/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, tipo_usuario: tipoUsuario, }),
       });
       if (!resUser.ok) throw new Error("Error creando usuario.");
       const dataUser = await resUser.json();
 
-      // 2. Crear perfil
-      const resPerfil = await fetch("/api/farmacia/perfiles/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usuario: dataUser.id, tipo_usuario: tipoUsuario }),
-      });
-      if (!resPerfil.ok) throw new Error("Error creando perfil.");
+      if (!resUser.ok) throw new Error("Error creando perfil.");
       setExito(true);
 
       // 3. Redirigir tras 1.5s
-      setTimeout(() => navigate("/main"), 1800);
+      setTimeout(() => navigate("/"), 1800);
 
     } catch (err) {
       setError(err.message || "Error inesperado");
