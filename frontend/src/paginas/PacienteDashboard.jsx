@@ -1,8 +1,17 @@
-export default function PasienteDashboard() {
+import AgendarCita from '../components/AgendarCita';
+import VerCitas from '../components/VerCitas';
+
+export default function PacienteDashboard() {
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold">Panel del pasiente</h2>
-      {/* … */}
+    <div className="bg-gray-50 min-h-screen py-8">
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-6">
+        <div className="flex-1">
+          <AgendarCita />
+        </div>
+        <div className="flex-1">
+          <VerCitas />
+        </div>
+      </div>
     </div>
   );
 }

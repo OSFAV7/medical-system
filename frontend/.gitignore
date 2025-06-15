@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Ignorar base de datos local de SQLite
+db_data/db.sqlite3
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
