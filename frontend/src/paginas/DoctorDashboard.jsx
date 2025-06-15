@@ -169,74 +169,94 @@ export default function DoctorDashboard() {
       {drawerOpen && <div className="fixed inset-0 bg-black/30 z-30" onClick={() => setDrawerOpen(false)}></div>}
 
       <div className="min-h-screen w-screen bg-gray-100 grid md:grid-cols-[1fr_1fr] relative">
-          {/* Contenido principal */}
-          <div className="pl-40 p-6 flex flex-col h-full md:col-span-1">
-            {/* Barra de búsqueda */}
-            <div>
-              <input
-                type="search"
-                placeholder="Buscar paciente…"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                className="w-full max-w-md rounded border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-8"
-              />
-            </div>
-            {/* Resultados */}
-            <div className="space-y-3">
-              {patients.length === 0 && query ? (
-                <p className="text-gray-500">Sin coincidencias…</p>
-              ) : (
-                patients.map(p => (
-                  <div
-                    key={p.id}
-                    className={`border rounded p-4 flex justify-between items-center hover:bg-emerald-50 cursor-pointer ${selectedPatient && selectedPatient.id === p.id ? 'bg-emerald-100' : ''}`}
-                    onClick={() => setSelectedPatient(p)}
-                  >
-                    <div>
-                      <p className="font-medium">{p.usuario_nombre || p.full_name || p.username || p.email || p.id || "Sin nombre"}</p>
-                      <p className="text-sm text-gray-500">{p.usuario_email}</p>
-                    </div>
-                    <span className="text-emerald-600 hover:underline">Ver historial</span>
-                  </div>
-                ))
-              )}
-            </div>
+        <div className="pl-40 p-6 flex flex-col h-full md:col-span-1">
+          <div>
+            <input
+              type="search"
+              placeholder="Buscar paciente…"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              className="w-full max-w-md rounded border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-8"
+            />
           </div>
-          {/* Historial clínico */}
-            <aside className="pl-6 bg-white shadow-inner h-full overflow-y-auto md:col-span-1 py-8">
-              <h2 className="text-2xl font-semibold mb-4 text-emerald-600">Historial clínico</h2>
-              {selectedPatient ? (
-                selectedPatient.historiales.length === 0 ? (
-                  <p className="text-gray-500">Sin registros para este paciente</p>
-                ) : (
-                  <div className="space-y-4">
-                    {selectedPatient.historiales.map((h) => (
-                      <div key={h.id} className="border-b pb-2 mb-2">
-                        <div className="font-medium">{ h.fecha_consulta? new Date(h.fecha_consulta).toLocaleString() : '' }</div>
-                        <div className="text-gray-700 text-sm whitespace-pre-line">
-                          <p>Altura: {h.altura}</p>
-                          <p>Peso: {h.peso}</p>
-                          <p>Motivo de la consulta: {h.motivo_consulta}</p>
-                          <p>Estado del paciente del consulta: {h.estadoactual}</p>
-                          <p>Diagnostico en consulta: {h.diagnostico}</p>
-                        </div>
-                        <div className="text-xs text-gray-400 mt-1">
-                          <p>Tratamiento: {h.tratamiento}</p>
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          <p>Notas Medicas: {h.notas_medicas}</p>
-                          </div>
-                      </div>
-                    ))}
+          <div className="space-y-3">
+            {patients.length === 0 && query ? (
+              <p className="text-gray-500">Sin coincidencias…</p>
+            ) : (
+              patients.map(p => (
+                <div
+                  key={p.id}
+                  className={`border rounded p-4 flex justify-between items-center hover:bg-emerald-50 cursor-pointer ${selectedPatient && selectedPatient.id === p.id ? 'bg-emerald-100' : ''}`}
+                  onClick={() => setSelectedPatient(p)}
+                >
+                  <div>
+                    <p className="font-medium">{p.usuario_nombre || p.full_name || p.username || p.email || p.id || "Sin nombre"}</p>
+                    <p className="text-sm text-gray-500">{p.usuario_email}</p>
                   </div>
-                )
-              ) : (
-                <p className="text-gray-400 italic mt-10">
-                  Selecciona un paciente para ver su historial clínico.
-                </p>
-              )}
-            </aside>
-      </div>   
+                  <span className="text-emerald-600 hover:underline">Ver historial</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <aside className="pl-6 bg-white shadow-inner h-full overflow-y-auto md:col-span-1 py-8">
+          <div className="flex justify-between items-center pr-10 mb-4">
+            <h2 className="text-2xl font-semibold text-emerald-600">Historial clínico</h2>
+            {selectedPatient && (
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded shadow"
+              >
+                Crear consulta
+              </button>
+            )}
+          </div>
+
+          {selectedPatient ? (
+            selectedPatient.historiales.length === 0 ? (
+              <p className="text-gray-500">Sin registros para este paciente</p>
+            ) : (
+              <div className="space-y-4">
+                {selectedPatient.historiales.map((h) => (
+                  <div key={h.id} className="border-b pb-2 mb-2">
+                    <div className="font-medium">{h.fecha_consulta ? new Date(h.fecha_consulta).toLocaleString() : ''}</div>
+                    <div className="text-gray-700 text-sm whitespace-pre-line">
+                      <p>Altura: {h.altura}</p>
+                      <p>Peso: {h.peso}</p>
+                      <p>Motivo de la consulta: {h.motivo_consulta}</p>
+                      <p>Estado del paciente del consulta: {h.estadoactual}</p>
+                      <p>Diagnostico en consulta: {h.diagnostico}</p>
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">
+                      <p>Tratamiento: {h.tratamiento}</p>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      <p>Notas Medicas: {h.notas_medicas}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          ) : (
+            <p className="text-gray-400 italic mt-10">Selecciona un paciente para ver su historial clínico.</p>
+          )}
+        </aside>
+      </div>
+
+      {showModal && selectedPatient && (
+        <ModalCrearConsulta
+          paciente={selectedPatient}
+          onClose={() => setShowModal(false)}
+          onCreated={(nuevoHistorial) => {
+            setSelectedPatient(prev => ({
+              ...prev,
+              historiales: [nuevoHistorial, ...(prev.historiales || [])]
+            }));
+          }}
+        />
+      )}
+    </div>
     </div>
   );
 }
