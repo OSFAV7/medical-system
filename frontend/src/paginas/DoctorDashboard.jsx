@@ -10,34 +10,31 @@ export default function DoctorDashboard() {
   const [time, setTime] = useState(() => new Date().toLocaleTimeString());
   const timerRef = useRef(null);
 
- useEffect(() => {
+useEffect(() => {
   const controller = new AbortController();
-  const token = localStorage.getItem('accessToken'); // O el nombre de tu token
+  const token = localStorage.getItem('accessToken');
 
-  if (query.trim() !== '') {
-    fetch(`http://localhost/api/paciente/pacientes/?search=${encodeURIComponent(query)}`,
-        {
-          signal: controller.signal,
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-        .then(r => {
-          if (!r.ok) throw new Error('No autorizado');
-          return r.json();
-        })
-        .then(data => {
-          console.log('Pacientes recibidos:', data); // LOG PACIENTES
-          setPatients(data);
-        })
-        .catch(() => setPatients([]));
-    } else {
-      setPatients([]);
+  fetch(`http://localhost/api/paciente/pacientes/`, {
+    signal: controller.signal,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     }
-    return () => controller.abort();
-  }, [query]);
+  })
+    .then(r => {
+      if (!r.ok) throw new Error('No autorizado');
+      return r.json();
+    })
+    .then(data => {
+      const filtered = data.filter(p =>
+        `${p.usuario_nombre} ${p.usuario_apellido || ''}`.toLowerCase().includes(query.toLowerCase())
+      );
+      setPatients(filtered);
+    })
+    .catch(() => setPatients([]));
+
+  return () => controller.abort();
+}, [query]);
 
 
 useEffect(() => {
