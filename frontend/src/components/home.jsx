@@ -115,7 +115,7 @@ export default function Home() {
       {/* ABOUT */}
       <section id="about" className="bg-gray-100 py-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Quiénes somos</h2>
+          <h2 className="text-3xl font-bold mb-6">¿Quiénes somos?</h2>
           <p className="text-gray-600 leading-relaxed">
             Somos un equipo apasionado por la salud y la tecnología. Nuestra misión es simplificar la gestión de consultorios, brindando herramientas digitales fáciles y seguras para profesionales y pacientes
           </p>
@@ -139,7 +139,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8">
           <div>
             <h3 className="text-lg font-semibold mb-4 text-white">Contacto</h3>
-            <p className="text-sm mb-2">Correo: hola@medicalsystem.com</p>
+            <p className="text-sm mb-2">Correo: hola@mdentalmax.com</p>
             <p className="text-sm mb-2">Tel: +52 993 000 0000</p>
             <p className="text-sm">Cárdenas, Tabasco, México</p>
           </div>

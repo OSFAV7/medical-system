@@ -1,6 +1,7 @@
 import AgendarCita from '../components/AgendarCita';
 import VerCitas from '../components/VerCitas';
 
+
 export default function PacienteDashboard() {
   return (
     <div className="bg-gray-50 min-h-screen py-8">
@@ -10,6 +11,7 @@ export default function PacienteDashboard() {
         </div>
         <div className="flex-1">
           <VerCitas />
+     
         </div>
       </div>
     </div>

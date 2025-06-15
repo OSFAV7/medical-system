@@ -179,6 +179,7 @@ useEffect(() => {
                 className="w-full max-w-md rounded border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-8"
               />
             </div>
+            
             {/* Resultados */}
             <div className="space-y-3">
               {patients.length === 0 && query ? (
