@@ -129,6 +129,21 @@ export default function Navbar() {
           >
             Ingresar
           </button>
+          
+                      <p className="mt-4 text-center text-sm text-gray-500">
+              ¿No tienes cuenta?
+              <button
+                type="button"
+                onClick={() => {
+                  closeModal(); // tu función para cerrar el modal
+                  navigate('/registro'); // usa useNavigate de react-router
+                }}
+                className="ml-1 text-emerald-600 hover:underline font-semibold"
+              >
+                Regístrate aquí
+              </button>
+            </p>
+
         </form>
       </div>
       {/* Animación fade-in si quieres, solo agrega esto en tu tailwind.config.js */}
